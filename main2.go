@@ -3,25 +3,38 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/gorilla/mux"
 )
 
-type Artists struct {
-	Artists []Artist `json:"artists"`
-}
 type Artist struct {
 	Name  string `json:"Name"`
 	Genre string `json:"Genre"`
-	ID    int64  `json:"ref"`
+	ID    string `json:"id"`
 }
+
+var jsonArtists []Artist
 
 func getArtists(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(jsonArtists)
 }
+
+func getArtist(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r) // get parameters for the search
+	for _, item := range jsonArtists {
+		if item.ID == params["id"] {
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
+}
+
 func main() {
 
 	jsonFile, err := os.Open("artistInfo.json")
@@ -30,18 +43,18 @@ func main() {
 	}
 	defer jsonFile.Close()
 
-	byteValue, _ := ioutil.ReadAll(jsonFile)
+	byteValue, _ := ioutil.ReadFile("artistInfo.json")
 
-	var artists Artists
-
-	json.Unmarshal(byteValue, &artists)
-	for i := 0; i < len(artists.Artists); i++ {
-		fmt.Println("Artists: " + artists.Artists[i].Name)
+	err = json.Unmarshal(byteValue, &jsonArtists)
+	if err != nil {
+		fmt.Println(err)
 	}
+
+	fmt.Printf("%v", len(jsonArtists))
 	r := mux.NewRouter()
 
 	r.HandleFunc("/api/artists", getArtists).Methods("GET")
-	r.HandleFunc("/api/artists/{id}", getArtists).Methods("GET")
+	r.HandleFunc("/api/artists/{id}", getArtist).Methods("GET")
 
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
