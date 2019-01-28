@@ -20,13 +20,17 @@ type Artist struct {
 var jsonArtists []Artist
 
 func getArtists(w http.ResponseWriter, r *http.Request) {
+	// set the content type to json format
 	w.Header().Set("Content-Type", "application/json")
+	// encode all data to page
 	json.NewEncoder(w).Encode(jsonArtists)
 }
 
 func getArtist(w http.ResponseWriter, r *http.Request) {
+	// set the content type to json format
 	w.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(r) // get parameters for the search
+	// extract the parameters of the search
+	params := mux.Vars(r)
 	for _, item := range jsonArtists {
 		if item.ID == params["id"] {
 			json.NewEncoder(w).Encode(item)
@@ -36,25 +40,18 @@ func getArtist(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// open the json file containing the data
-	//jsonFile, err := os.Open("artistInfo.json")
-	//if err != nil {
-	//	fmt.Println(err)
-	//}
-	//defer jsonFile.Close()
-	// read the
+	// read the json data from local file
 	byteValue, _ := ioutil.ReadFile("artistInfo.json")
-
+	// place the data in jsonArtists
 	err := json.Unmarshal(byteValue, &jsonArtists)
 	if err != nil {
 		fmt.Println(err)
 	}
-
-	fmt.Printf("%v", len(jsonArtists))
+	// initialize the mux router
 	r := mux.NewRouter()
-
+	// designate functions to handle routes
 	r.HandleFunc("/api/artists", getArtists).Methods("GET")
 	r.HandleFunc("/api/artists/{id}", getArtist).Methods("GET")
-
+	// listen and respond to requests on port 8000
 	log.Fatal(http.ListenAndServe(":8000", r))
 }
