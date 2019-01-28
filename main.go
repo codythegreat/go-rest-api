@@ -18,6 +18,10 @@ type Artist struct {
 
 var jsonArtists []Artist
 
+func printInstructions(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Usage:\n/api/artists/all -- get all artists\n/api/artists/ID=123 -- get a specific artists at ID 123\n/api/artists/NAME=Alice-in-Chains -- get instances of artists (- for spaces in name)\n/api/artists/GENRE=vocalists -- get all artists of genre (- for spaces in genre)\n")
+}
+
 func getArtists(w http.ResponseWriter, r *http.Request) {
 	// set the content type to json format
 	w.Header().Set("Content-Type", "application/json")
@@ -79,10 +83,11 @@ func main() {
 	// initialize the mux router
 	r := mux.NewRouter()
 	// designate functions to handle routes
+	r.HandleFunc("/", printInstructions).Methods("GET")
 	r.HandleFunc("/api/artists/all", getArtists).Methods("GET")
 	r.HandleFunc("/api/artists/ID={id}", getArtist).Methods("GET")
 	r.HandleFunc("/api/artists/NAME={name}", getArtistGenres).Methods("GET")
 	r.HandleFunc("/api/artists/GENRE={genre}", getGenres).Methods("GET")
 	// listen and respond to requests on port 8000
-	log.Fatal(http.ListenAndServe("45.76.248.143:8000", r))
+	log.Fatal(http.ListenAndServe("45.76.248.143:80", r))
 }
