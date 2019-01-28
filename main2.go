@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
+	//	"os"
 
 	"github.com/gorilla/mux"
 )
@@ -36,16 +36,16 @@ func getArtist(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-
-	jsonFile, err := os.Open("artistInfo.json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	defer jsonFile.Close()
-
+	// open the json file containing the data
+	//jsonFile, err := os.Open("artistInfo.json")
+	//if err != nil {
+	//	fmt.Println(err)
+	//}
+	//defer jsonFile.Close()
+	// read the
 	byteValue, _ := ioutil.ReadFile("artistInfo.json")
 
-	err = json.Unmarshal(byteValue, &jsonArtists)
+	err := json.Unmarshal(byteValue, &jsonArtists)
 	if err != nil {
 		fmt.Println(err)
 	}
