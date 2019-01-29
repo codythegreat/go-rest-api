@@ -3,11 +3,14 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
+	"math/rand"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type Artist struct {
@@ -70,6 +73,21 @@ func getGenres(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	json.NewEncoder(w).Encode(items)
+}
+
+func getRandom(w http.ResponseWriter, r *http.Request) {
+	// set the content type to json format
+	w.Header().Set("Content-Type", "application/json")
+	// extract the parameters of the search
+	randSrc := rand.NewSourse(time.Now().UnixNano())
+	randNew := rand.New(randSrc)
+	randomPick := randNew.Intn(53383)
+	for _, item := range jsonArtists {
+		if item.ID == params["id"] {
+			json.NewEncoder(w).Encode(item)
+			return
+		}
+	}
 }
 
 func main() {
