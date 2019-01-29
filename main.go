@@ -7,6 +7,7 @@ import (
 	"log"
 	"math/rand"
 	"net/http"
+	"strconv"
 	"strings"
 	"time"
 
@@ -22,7 +23,7 @@ type Artist struct {
 var jsonArtists []Artist
 
 func printInstructions(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Usage:\n/api/artists/all -- get all artists\n/api/artists/ID=123 -- get a specific artists at ID 123\n/api/artists/NAME=Alice-in-Chains -- get instances of artists (- for spaces in name)\n/api/artists/GENRE=vocalists -- get all artists of genre (- for spaces in genre)\n")
+	fmt.Fprintf(w, "Usage:\n/api/artists/all -- get all artists\n/api/artists/rand -- get a random artist\n/api/artists/ID=123 -- get a specific artists at ID 123\n/api/artists/NAME=Alice-in-Chains -- get instances of artists (- for spaces in name)\n/api/artists/GENRE=vocalists -- get all artists of genre (- for spaces in genre)\n")
 }
 
 func getArtists(w http.ResponseWriter, r *http.Request) {
@@ -83,7 +84,7 @@ func getRandom(w http.ResponseWriter, r *http.Request) {
 	randNew := rand.New(randSrc)
 	randomPick := randNew.Intn(53383)
 	for _, item := range jsonArtists {
-		if item.ID == string(randomPick) {
+		if item.ID == strconv.Itoa(randomPick) {
 			json.NewEncoder(w).Encode(item)
 			return
 		}
