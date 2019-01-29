@@ -79,11 +79,11 @@ func getRandom(w http.ResponseWriter, r *http.Request) {
 	// set the content type to json format
 	w.Header().Set("Content-Type", "application/json")
 	// extract the parameters of the search
-	randSrc := rand.NewSourse(time.Now().UnixNano())
+	randSrc := rand.NewSource(time.Now().UnixNano())
 	randNew := rand.New(randSrc)
 	randomPick := randNew.Intn(53383)
 	for _, item := range jsonArtists {
-		if item.ID == params["id"] {
+		if item.ID == string(randomPick) {
 			json.NewEncoder(w).Encode(item)
 			return
 		}
@@ -106,6 +106,7 @@ func main() {
 	r.HandleFunc("/api/artists/ID={id}", getArtist).Methods("GET")
 	r.HandleFunc("/api/artists/NAME={name}", getArtistGenres).Methods("GET")
 	r.HandleFunc("/api/artists/GENRE={genre}", getGenres).Methods("GET")
+	r.HandleFunc("/api/artists/rand", getRandom).Methods("GET")
 	// listen and respond to requests on port 8000
 	log.Fatal(http.ListenAndServe("45.76.248.143:80", r))
 }
