@@ -109,5 +109,5 @@ func main() {
 	r.HandleFunc("/api/artists/GENRE={genre}", getGenres).Methods("GET")
 	r.HandleFunc("/api/artists/rand", getRandom).Methods("GET")
 	// listen and respond to requests on port 8000
-	log.Fatal(http.ListenAndServe("45.76.248.143:80", r))
+	log.Fatal(http.ListenAndServe("45.76.248.143:8000", r))
 }
