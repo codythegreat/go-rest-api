@@ -68,6 +68,10 @@ func getArtistGenres(w http.ResponseWriter, r *http.Request) {
 			items = append(items, item)
 		}
 	}
+	if len(items) == 0 {
+		fmt.Fprintln(w, "This artist could not be found.")
+		return
+	}
 	json.NewEncoder(w).Encode(items)
 }
 
@@ -82,6 +86,10 @@ func getGenres(w http.ResponseWriter, r *http.Request) {
 		if item.Genre == strings.Join(strings.Split(params["genre"], "-"), " ") {
 			items = append(items, item)
 		}
+	}
+	if len(items) == 0 {
+		fmt.Fprintln(w, "This genre could not be found.")
+		return
 	}
 	json.NewEncoder(w).Encode(items)
 }
