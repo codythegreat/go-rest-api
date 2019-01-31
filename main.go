@@ -38,9 +38,12 @@ func getArtist(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// extract the parameters of the search
 	params := mux.Vars(r)
+	// error message 
+	errorMessage := "You've entered an invalid ID. Please enter a whole number with commas omitted."
+	// parse the string input of ID into a 64 bit int
 	requestedID, err := strconv.ParseInt(params["id"], 10, 64)
 	if err != nil {
-		fmt.Fprintln(w, "You've entered an invalid ID. Please enter a whole number with commas omitted.")
+		fmt.Fprintln(w, errorMessage)
 	}
 	for _, item := range jsonArtists {
 		if item.ID == requestedID {
@@ -48,6 +51,7 @@ func getArtist(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	fmt.Fprintln(w, errorMessage)
 }
 
 // for a given artist, retieve all instances
