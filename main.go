@@ -17,7 +17,7 @@ import (
 type Artist struct {
 	Name  string `json:"Name"`
 	Genre string `json:"Genre"`
-	ID    string `json:"id"`
+	ID    int64  `json:"id"`
 }
 
 var jsonArtists []Artist
@@ -38,8 +38,12 @@ func getArtist(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	// extract the parameters of the search
 	params := mux.Vars(r)
+	requestedID, err := strconv.ParseInt(params["id"], 10, 64)
+	if err != nil {
+		panic(err)
+	}
 	for _, item := range jsonArtists {
-		if item.ID == params["id"] {
+		if item.ID == requestedID {
 			json.NewEncoder(w).Encode(item)
 			return
 		}
@@ -82,9 +86,9 @@ func getRandom(w http.ResponseWriter, r *http.Request) {
 	// extract the parameters of the search
 	randSrc := rand.NewSource(time.Now().UnixNano())
 	randNew := rand.New(randSrc)
-	randomPick := randNew.Intn(53383)
+	randomPick := int64(randNew.Intn(53383))
 	for _, item := range jsonArtists {
-		if item.ID == strconv.Itoa(randomPick) {
+		if item.ID == randomPick {
 			json.NewEncoder(w).Encode(item)
 			return
 		}
@@ -109,5 +113,5 @@ func main() {
 	r.HandleFunc("/api/artists/GENRE={genre}", getGenres).Methods("GET")
 	r.HandleFunc("/api/artists/rand", getRandom).Methods("GET")
 	// listen and respond to requests on port 8000
-	log.Fatal(http.ListenAndServe("45.76.248.143:8000", r))
+	log.Fatal(http.ListenAndServe("45.76.248.143:80", r))
 }
